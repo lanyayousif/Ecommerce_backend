@@ -24,7 +24,7 @@ export const addProduct = async (req, res) => {
     const product = await Product.create(req.body);
     res.json({ status: "sucsess", data: product });
   } catch (error) {
-    res.status(400).json({ status: "error", message: error });
+    res.status(400).json({ status: "error haia", message: error });
   }
 };
 export const updateProduct = async (req, res) => {
