@@ -3,11 +3,11 @@ import product from "../models/productModels.js";
 
 export const getAllCart = async (req, res) => {
   try {
-    const cart = await Cart.find().populate("product");
+    const cart = await Cart.find().populate("cartItems.productId");
     console.log("cart");
     res.json({ status: "sucsess", data: cart });
   } catch (error) {
-    res.status(404).json({ status: "error", message: "error" });
+    res.status(404).json({ status: "error get", message: error });
   }
 };
 export const addCart = async (req, res) => {
@@ -54,7 +54,7 @@ export const updateCart = async (req, res) => {
 export const deleteCart = async (req, res) => {
   try {
     const id = req.params.id;
-    const cart = await Cart.findByIdAndDelete(id);
+    const cart = await Cart.deleteMany(id);
     res.json({ status: "sucsess", data: cart });
   } catch (error) {
     res.status(404).json({ status: "error", message: error });

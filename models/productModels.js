@@ -3,9 +3,12 @@ const productSchema = new mongoose.Schema({
   productName: { type: String, required: true },
   productTitle: { type: String, required: true },
   productDescription:{ type: String, required: true },
+  productType:{ type: String, required: true },
   productSize:{type: String, required: true},
   ProductPrice:{type:Number,required: true},
+  ProductDiscountPrice:{type:Number,required: true},
   productImgcard:[{type:String ,required: true}],
+  productImgcardHover:[{type:String ,required: true}],
   productImgPage:[{type:String ,required: true}],
   productImgFree:[{type:String ,required: true}],
   productDetailse: { type: String, required: true },
@@ -15,8 +18,8 @@ const productSchema = new mongoose.Schema({
   productRaiting:{type:Number ,required: true},
   productLiked:{ type: Boolean, required: true },
   
-  cartItemId: { type: mongoose.Types.ObjectId, ref: "cartItem" },
-  // cart_items:[{type:mongoose.Types.ObjectId,ref:"cart"}],
+  // cartItemId: { type: mongoose.Types.ObjectId, ref: "cartItem" },
+  cart_items:[{type:mongoose.Types.ObjectId,ref:"cart"}],
   catagoryId:{type:mongoose.Types.ObjectId,ref:"catagory",required:true},
 });
 
