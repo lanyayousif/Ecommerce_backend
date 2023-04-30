@@ -32,7 +32,6 @@ app.use("/product", productRouter);
 // app.use(protect) // agar bmanawe hamu route akn la xwari amawa ainusin protect bkain
 app.use("/catagory", catagoryRouter);
 app.use("/cart",cartRouter);
-app.use("/cartItem",cartItemRouter)
 // app.use("/cart", protect,isAdmin,cartRouter);
 app.use("/user", userRouter);
 app.use(errorHandler)
