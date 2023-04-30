@@ -6,7 +6,6 @@ import catagoryRouter from "./router/catagoryRouter.js";
 import productRouter from "./router/productRouter.js";
 import cartRouter from "./router/cartRouter.js";
 import userRouter from "./router/userRouter.js";
-import cartItemRouter from "./router/cartItemRouter.js"
 
 import dotenv from "dotenv";
 import cors from "cors";
