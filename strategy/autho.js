@@ -4,25 +4,24 @@ import users from "../models/UserModel.js";
 import { ExtractJwt, Strategy as JWTStrategy } from "passport-jwt";
 import dotenv from "dotenv";
 
-dotenv.config();
+dotenv.config();//boi accessi file .env bin
 
 passport.use(
   "signup",
-  new localStrategy(
+  new localStrategy( //object ik la localstorage aka drwst akain
     {
       usernameField: "email",
       passwordField: "password",
       passReqToCallback: true,
     },
-    async (req, email, password, done) => {
+    async (req, email, password, done) => {//email u password haman nawi model akaia
       try {
         const user = await users.create({
           email,
           password,
           username: req.body.username,
         });
-
-        done(null, user);
+      return done(null, user);
       } catch (error) {
         done(error);
       }
@@ -42,7 +41,7 @@ passport.use(
         const user = await users.findOne({ email });
 
         if (!user)
-          return done(null, false, { message: "invaildent credentials" });
+          return done(null, false, { message: "invaildent credentials" });//false mabasti awaia user buni haia yan na
         const validate = await user.isValiddPassword(password);
         if (!validate)
           return done(null, false, { message: "invaildent credentials" });
@@ -52,6 +51,7 @@ passport.use(
     }
   )
 );
+// am strategy boverifiy token akaman bakar ahenin
 passport.use(
   new JWTStrategy(
     {

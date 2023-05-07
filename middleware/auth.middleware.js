@@ -2,28 +2,8 @@ import passport from "passport";
 import jwt from "jsonwebtoken";
 import users from "../models/UserModel.js";
 
-export const loginMiddleware = async function (req, res, next) {
-  passport.authenticate("login", async (err, user, info) => {
-    try {
-      if (err || !user) {
-        // const error = new Error("An error occurred.");
-        // return next(error);
-        throw new CustomError("not user fount", 404, "5000");
-      }
-      req.login(user, { session: false }, async (error) => {
-        if (error) return next(error);
+export const signupMiddleware=passport.authenticate("signup", { session: false })
 
-        const body = { _id: user._id, email: user.email };
-        const token = jwt.sign({ user: body }, process.env.TOP_SECRET, {
-          expiresIn: "7 day",
-        });
-        return res.json({ token });
-      });
-    } catch (error) {
-      next(error);
-    }
-  })(req, res, next);
-};
 
 export const protect = passport.authenticate("jwt", { session: false });
 

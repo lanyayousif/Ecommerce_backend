@@ -1,46 +1,42 @@
 import passport from "passport";
+import jwt from "jsonwebtoken";
 import customError from "../customError.js";
 import cart from "../models/cartModel.js";
 import Users from "../models/UserModel.js";
 import { tryCatch } from "../utils/tryCatch.js";
 
-export const createUser = async (req, res,next) => {
-  try {
-    const user = await Users.create(req.body);
-    res.json({ status: "success", data: user });
-  } catch (err) {
-    res.status(400).json({ status: "error", data: err });
-    next(err)
-  }
-};
+// export const createUser = async (req, res,next) => {
+//   try {
+//     const user = await Users.create(req.body);
+//     res.json({ status: "success", data: user });
+//   } catch (err) {
+//     res.status(400).json({ status: "error", data: err });
+//     next(err)
+//   }
+// };
 
-export const getUser = async (req, res) => {
-  const users = await Users.find().populate(("cartId"));
-  try {
-    res.json({ status: "success", data: users });
-  } catch (err) {
-    res.status(400).json({ status: "error", data: err });
-    next(err)
-  }
-};
 
 export const signup = async (req, res,next) => {
   try {
+    console.log("test  "+process.env.TOP_SECRET)
+    
     req.login(req.user,{session:false},async(error)=>{
       if(error){
         return new customError(error.message,401,4001)
       }
       const body={sub:req.user._id,email:req.user.email}
-      const token=jwt.sign({user:body},process.env.JWT_SECRET,{
+      const token=jwt.sign({ user: body }, process.env.TOP_SECRET, {
         expiresIn: "7 days",
-      })
+      });
+      res.json({
+        status: "success",
+        data: { user:req.user, token },
+      });
     })
-    res.json({ status: "success", data: req.user });
-
   } catch (err) {
     console.log(err);
-    // res.status(400).json({ status: "error", data: err });
     next(err)
+    // res.status(400).json({ status: "error", data: err });
   }
 };
 
@@ -57,7 +53,7 @@ export const login=(req,res,next)=>{
           return new customError(error.message,401,4001)
         }
         const body={sub:user._id,email:user.email}
-        const token=jwt.sign({user:body},process.env.JWT_SECRET,{
+        const token=jwt.sign({user:body},process.env.TOP_SECRET,{
           expiresIn: "7 days",
         })
         res.json({token})
@@ -68,6 +64,15 @@ export const login=(req,res,next)=>{
   })(req,res,next)
 }
 
+export const getUser = async (req, res) => {
+  const users = await Users.find().populate(("cartId"));
+  try {
+    res.json({ status: "success", data: users });
+  } catch (err) {
+    res.status(400).json({ status: "error", data: err });
+    next(err)
+  }
+};
 
 export const getCurentUser =  tryCatch(async (req, res,next) => {
     const users = await Users.findById(req.user._id).populate(("cartId"));
