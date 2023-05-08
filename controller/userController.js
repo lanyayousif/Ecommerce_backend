@@ -18,8 +18,6 @@ import { tryCatch } from "../utils/tryCatch.js";
 
 export const signup = async (req, res,next) => {
   try {
-    console.log("test  "+process.env.TOP_SECRET)
-    
     req.login(req.user,{session:false},async(error)=>{
       if(error){
         return new customError(error.message,401,4001)
@@ -75,7 +73,7 @@ export const getUser = async (req, res) => {
 };
 
 export const getCurentUser =  tryCatch(async (req, res,next) => {
-    const users = await Users.findById(req.user._id).populate(("cartId"));
+    const users = await Users.findById(req.user.sub).populate("cartId");
     res.json({ status: "success", data: users }) 
     // try {
     //   res.json({ status: "success", data: users });
