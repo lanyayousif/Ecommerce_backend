@@ -39,7 +39,6 @@ passport.use(
     async (email, password, done) => {
       try {
         const user = await users.findOne({ email });
-
         if (!user)
           return done(null, false, { message: "invaildent credentials" });//false mabasti awaia user buni haia yan na
         const validate = await user.isValiddPassword(password);
