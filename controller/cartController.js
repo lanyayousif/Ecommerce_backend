@@ -4,7 +4,6 @@ import product from "../models/productModels.js";
 export const getAllCart = async (req, res) => {
   try {
     const cart = await Cart.find().populate("cartItems.productId");
-    console.log("cart");
     res.json({ status: "sucsess", data: cart });
   } catch (error) {
     res.status(404).json({ status: "error get", message: error });
@@ -12,8 +11,10 @@ export const getAllCart = async (req, res) => {
 };
 export const addCart = async (req, res) => {
   try {
+    req.body.userId=req.user.sub
     const cart = await Cart.create(req.body);
     res.json({ status: "sucsess", data: cart });
+    console.log(req.body)
   } catch (error) {
     res.status(400).json({ status: "error haia", message: error });
   }

@@ -6,7 +6,6 @@ import Product from "../models/productModels.js";
 export const getAllProduct = async (req, res) => {
   try {
     const product = await Product.find().populate("catagoryId").populate("cart_items");
-    console.log("product");
     res.json({ status: "sucsess", data: product });
   } catch (error) {
     res.status(404).json({ status: "error", message: "error" });

@@ -59,7 +59,7 @@ passport.use(
     },
     async (token, done) => {
       // console.log(ExtractJwt.fromAuthHeaderAsBearerToken())
-      console.log(token)
+      // console.log(token)
       try {
         return done(null, token.user);
       } catch (error) {

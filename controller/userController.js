@@ -15,7 +15,6 @@ import { tryCatch } from "../utils/tryCatch.js";
 //   }
 // };
 
-
 export const signup = async (req, res,next) => {
   try {
     req.login(req.user,{session:false},async(error)=>{
@@ -75,8 +74,8 @@ export const getUser = async (req, res) => {
 export const getCurentUser =  tryCatch(async (req, res,next) => {
     const users = await Users.findById(req.user.sub).populate("cartId");
     res.json({ status: "success", data: users }) 
-    console.log("curent user controller")
-    console.log(users)
+    // console.log("curent user controller")
+    // console.log(users)
     // try {
     //   res.json({ status: "success", data: users });
     // } catch (err) {
