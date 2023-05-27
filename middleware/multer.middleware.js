@@ -39,19 +39,18 @@ export const resizeImage = async (req, res, next) => {
 };
 
 export const resizeImages=async (req, res, next) => {
-    if(!req.files) next()
+    if(!req.files){
+       next() 
+       return}
     req.body.files=[]
-    for (let i = 0; i < array.length; i++) {
-        req.body.files.push(
-            `product-${Date.now()}-${Math.round(
-                Math.random() * 1000
-              )}.jpeg`
-        ) 
+    for (let i = 0; i < req.files.length; i++) {
+      const fileName=`product-${Date.now()}-${Math.round( Math.random() * 1000)}.jpeg`
+        req.body.files.push(`products/${fileName}`) 
      await sharp(req.files[i].buffer)
         .resize(500)
     .toFormat("jpeg")
-    .toFile(`uploads/${req.body.files[i]}`);
-     
+    .jpeg({quality:90})
+    .toFile(`uploads/products/${fileName}`);
     }
     next()
 }

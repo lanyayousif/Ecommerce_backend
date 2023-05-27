@@ -14,9 +14,9 @@ const productSchema = new mongoose.Schema({
   productDetailse: { type: String, required: true },
   productIntegrate: { type: String, required: true },
   productUse:{type: String, required: true },
-  productReviews:{ type: Number, required: true },
-  productRaiting:{type:Number ,required: true},
-  productLiked:{ type: Boolean, required: true },
+  productReviews:{ type: Number, required: false },
+  productRaiting:{type:Number ,required: false},
+  productLiked:{ type: Boolean, required: false },
   
   // cartItemId: { type: mongoose.Types.ObjectId, ref: "cartItem" },
   cart_items:[{type:mongoose.Types.ObjectId,ref:"cart"}],
@@ -25,6 +25,12 @@ const productSchema = new mongoose.Schema({
 
 const product = mongoose.model("product", productSchema);
 export default product;
+// productReviews: [
+//   {
+//     author: { type: String, required: true },
+//     reviewRating: { type: Number, required: true },
+//   },
+// ],
 // {
 //   "productName":"cerom",
 // "productTitle":"Freshly Juiced Vitamin C Drop 3",

@@ -7,7 +7,7 @@ import {
   updateProduct,
   deleteAllProduct,
 } from "../controller/productController.js";
-import { resizeImage, uploadMulti, uploadSingle } from "../middleware/multer.middleware.js";
+import { resizeImage, resizeImages, uploadMulti, uploadSingle } from "../middleware/multer.middleware.js";
 
 const router = Router();
 router.route("/").get(getAllProduct).post(addProduct).delete(deleteAllProduct);
@@ -15,11 +15,11 @@ router.route("/:id").delete(deleteProduct).patch(updateProduct).get(getProductBy
 
 router.route("/upload").post(uploadSingle,resizeImage,(req,res)=>{
   console.log(req.file)
-  res.send(req.file.filename)
+  res.json({path:`product/${req.file.filename}`})
 })
-router.route("/upload-multi").post(uploadMulti,(req,res)=>{
-  console.log(req.files)
-  res.send(req.files)
+router.route("/upload-multi").post(uploadMulti,resizeImages,(req,res)=>{
+  console.log(req.body.files)
+  res.json({ paths: req.body.files });
 })
 
 export default router;
