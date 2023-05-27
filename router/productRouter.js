@@ -14,11 +14,11 @@ router.route("/").get(getAllProduct).post(addProduct).delete(deleteAllProduct);
 router.route("/:id").delete(deleteProduct).patch(updateProduct).get(getProductById);
 
 router.route("/upload").post(uploadSingle,resizeImage,(req,res)=>{
-  console.log(req.file)
+  // console.log(req.file)
   res.json({path:`product/${req.file.filename}`})
 })
 router.route("/upload-multi").post(uploadMulti,resizeImages,(req,res)=>{
-  console.log(req.body.files)
+  // console.log(req.body.files)
   res.json({ paths: req.body.files });
 })
 
