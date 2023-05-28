@@ -45,19 +45,19 @@ export const resizeImage = async (req, res, next) => {
 };
 
 export const resizeImages=async (req, res, next) => {
-  // console.log(req.file)
-    if(!req.files){
+    if(!Object.values(req.files)[0]){
        next() 
        return}
     req.body.files=[]
-    for (let i = 0; i < req.files.length; i++) {
+    for (let i = 0; i < Object.values(req.files)[0].length; i++) {
       const fileName=`product-${Date.now()}-${Math.round( Math.random() * 1000)}.jpeg`
         req.body.files.push(`products/${fileName}`) 
-     await sharp(req.files[i].buffer)
+     await sharp(Object.values(req.files)[0][i].buffer)
         .resize(500)
     .toFormat("jpeg")
     .jpeg({quality:90})
     .toFile(`uploads/products/${fileName}`);
     }
+   
     next()
 }
