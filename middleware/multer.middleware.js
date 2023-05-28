@@ -26,6 +26,12 @@ const fileFilter = (req, file, cb) => {
 const upload = multer({ storage: multerStorage, fileFilter: fileFilter });
 export const uploadSingle = upload.single("photo"); // photo nawi filed akaia la postman akaia bangi akain
 export const uploadMulti = upload.array("photos", 5); // bo zyakrdni multi photo limi kai 5
+export const uploadFildes = upload.fields([
+  { name: 'productImgcard', maxCount: 5 },
+  { name: 'productImgcardHover', maxCount: 5 },
+  { name: 'productImgPage', maxCount: 5 },
+  { name: 'productImgFree', maxCount: 5 }
+]);
 
 export const resizeImage = async (req, res, next) => {
   req.file.filename = `product-${Date.now()}-${Math.round(
@@ -39,6 +45,7 @@ export const resizeImage = async (req, res, next) => {
 };
 
 export const resizeImages=async (req, res, next) => {
+  // console.log(req.file)
     if(!req.files){
        next() 
        return}
