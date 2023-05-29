@@ -17,11 +17,7 @@ import {
 
 const router = Router();
 router.route("/").get(getAllProduct).post(addProduct).delete(deleteAllProduct);
-router
-  .route("/:id")
-  .delete(deleteProduct)
-  .patch(updateProduct)
-  .get(getProductById);
+router.route("/:id").delete(deleteProduct).patch(updateProduct).get(getProductById);
 
 router.route("/upload").post(uploadSingle, resizeImage, (req, res) => {
   // console.log(req.file)
@@ -33,9 +29,10 @@ router.route("/upload-multi").post(uploadMulti, resizeImages, (req, res) => {
 router.route("/uploadFildes").post(uploadFildes, resizeImages,  (req, res) =>{
     if (req.files) {
       console.log("file successfuly upload");
-      // console.log({ paths: Object.keys(req.files),valuePaths:Object.values(req.files)[0] });
+      res.json({ paths: req.body.files });
+      // console.log(req.body.files)
     }
-    res.json({ paths: Object.keys(req.files),valuePaths:Object.values(req.files)[0] });
+    // res.json({ paths: Object.keys(req.files),valuePaths:Object.values(req.files)[0] });
   });
 
 export default router;
