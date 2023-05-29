@@ -23,12 +23,8 @@ export const addProduct = async (req, res) => {
   try {
     console.log(req.body)
 
-    // const product = await Product.create(req.body);
-
-    // await catagory.findByIdAndUpdate(req.body.catagoryId, {
-    //   $push: { product: product._id },
-    // });
-    // res.json({ status: "sucsess", data: product });
+    const product = await Product.create(req.body);
+    res.json({ status: "sucsess", data: product });
   } catch (error) {
     res.status(400).json({ status: "error haia", message: error });
   }

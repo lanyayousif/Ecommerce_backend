@@ -20,7 +20,7 @@ const productSchema = new mongoose.Schema({
   
   // cartItemId: { type: mongoose.Types.ObjectId, ref: "cartItem" },
   cart_items:[{type:mongoose.Types.ObjectId,ref:"cart"}],
-  catagoryId:{type:mongoose.Types.ObjectId,ref:"catagory",required:true},
+  catagoryId:{type:mongoose.Types.ObjectId,ref:"catagory",required:false},
 });
 
 const product = mongoose.model("product", productSchema);

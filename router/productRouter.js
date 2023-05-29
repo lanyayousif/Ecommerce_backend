@@ -30,7 +30,7 @@ router.route("/uploadFildes").post(uploadFildes, resizeImages,  (req, res) =>{
     if (req.files) {
       console.log("file successfuly upload");
       res.json({ paths: req.body.files });
-      // console.log(req.body.files)
+      console.log(req.body.files)
     }
     // res.json({ paths: Object.keys(req.files),valuePaths:Object.values(req.files)[0] });
   });
