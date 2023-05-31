@@ -5,8 +5,30 @@ import Product from "../models/productModels.js";
 
 export const getAllProduct = async (req, res) => {
   try {
-    const product = await Product.find().populate("catagoryId").populate("cart_items");
-    res.json({ status: "sucsess", data: product });
+    let query = JSON.stringify(req.query)
+    query = query.replace(/\b(gte|gt|lt|lte)\b/g, (match) => `$${match}`);
+    
+    // console.log(query)
+
+    let queryObj = JSON.parse(query);
+    const excluteQuery = ["sort", "limit", "page", "fields", "search"];
+    
+
+    excluteQuery.forEach((key) => {
+      delete queryObj[key];
+    });
+    if (req.query.search) {
+      queryObj.productName = new RegExp(req.query.search, "i");
+    }
+    const getQuery = Product.find(queryObj);
+
+    const countQuery = getQuery.clone();
+    const countResults = await countQuery.count();//count number product return
+   
+
+    const product = await getQuery.populate("catagoryId").populate("cart_items");
+    // const product = await Product.find().populate("catagoryId").populate("cart_items");
+    res.json({ status: "sucsess", results: countResults, data: product });
   } catch (error) {
     res.status(404).json({ status: "error", message: "error" });
   }
