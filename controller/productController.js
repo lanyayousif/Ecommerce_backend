@@ -6,9 +6,8 @@ import Product from "../models/productModels.js";
 export const getAllProduct = async (req, res) => {
   try {
     let query = JSON.stringify(req.query)
+    console.log(query)
     query = query.replace(/\b(gte|gt|lt|lte)\b/g, (match) => `$${match}`);
-    
-    // console.log(query)
 
     let queryObj = JSON.parse(query);
     const excluteQuery = ["sort", "limit", "page", "fields", "search"];
@@ -27,7 +26,7 @@ export const getAllProduct = async (req, res) => {
    
 
     const product = await getQuery.populate("catagoryId").populate("cart_items");
-    // const product = await Product.find().populate("catagoryId").populate("cart_items");
+
     res.json({ status: "sucsess", results: countResults, data: product });
   } catch (error) {
     res.status(404).json({ status: "error", message: "error" });
