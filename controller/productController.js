@@ -23,7 +23,35 @@ export const getAllProduct = async (req, res) => {
     const countResults = await countQuery.count();//count number product return
 
     if (req.query.sort) {
-      getQuery.sort(req.query.sort);
+      if(req.query.sort==="alphaAZ"){
+        getQuery.sort({productName:1});
+      }
+      else if(req.query.sort==="alphaZA"){
+        getQuery.sort({productName:-1});
+      }
+      else if(req.query.sort==="pricelow"){
+        // getQuery.aggregate([
+        //   {
+        //     $addFields: {
+        //       minPrice: {
+        //         $min: ["$ProductPrice", "$ProductDiscountPrice"]
+        //       }
+        //     }
+        //   },
+        //   {
+        //     $sort: {
+        //       minPrice: 1
+        //     }
+        //   }
+        // ])
+        
+        getQuery.sort({ProductPrice:1,ProductDiscountPrice:1});
+      }
+      else if(req.query.sort==="pricehigh"){
+        getQuery.sort({ProductPrice:-1,ProductDiscountPrice:-1});
+      }
+      // getQuery.sort(req.query.sort);
+      console.log(req.query.sort)
     }
 
     if (req.query.fields) {
@@ -31,7 +59,7 @@ export const getAllProduct = async (req, res) => {
     }
    
     const page = req.query.page || 1;
-    const limit = req.query.limit || 3;
+    const limit = req.query.limit || 9;
     const skip = limit * (page - 1);
 
     getQuery.skip(skip).limit(limit);
@@ -40,7 +68,7 @@ export const getAllProduct = async (req, res) => {
 
     res.json({ status: "sucsess", results: countResults, data: product });
   } catch (error) {
-    res.status(404).json({ status: "error", message: "error" });
+    res.status(404).json({ status: "error", message: error });
   }
 
 }
