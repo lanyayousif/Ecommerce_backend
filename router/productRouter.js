@@ -5,7 +5,8 @@ import {
   addProduct,
   deleteProduct,
   updateProduct,
-  deleteAllProduct
+  deleteAllProduct,
+  getAll,
 } from "../controller/productController.js";
 import {
   resizeImage,
@@ -16,6 +17,7 @@ import {
 } from "../middleware/multer.middleware.js";
 
 const router = Router();
+router.route("/getAll").get(getAll);
 router.route("/").get(getAllProduct).post(addProduct).delete(deleteAllProduct);
 router.route("/:id").delete(deleteProduct).patch(updateProduct).get(getProductById);
 
