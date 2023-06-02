@@ -12,7 +12,6 @@ export const getAllProduct = async (req, res) => {
     let queryObj = JSON.parse(query);
     const excluteQuery = ["sort", "limit", "page", "fields", "search"];
     
-
     excluteQuery.forEach((key) => {
       delete queryObj[key];
     });
@@ -23,7 +22,20 @@ export const getAllProduct = async (req, res) => {
 
     const countQuery = getQuery.clone();
     const countResults = await countQuery.count();//count number product return
+
+    if (req.query.sort) {
+      getQuery.sort(req.query.sort);
+    }
+
+    if (req.query.fields) {
+      getQuery.select(req.query.fields);
+    }
    
+    const page = req.query.page || 1;
+    const limit = req.query.limit || 3;
+    const skip = limit * (page - 1);
+
+    getQuery.skip(skip).limit(limit);
 
     const product = await getQuery.populate("catagoryId").populate("cart_items");
 
@@ -32,6 +44,7 @@ export const getAllProduct = async (req, res) => {
     res.status(404).json({ status: "error", message: "error" });
   }
 };
+
 export const getProductById = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);

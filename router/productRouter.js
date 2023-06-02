@@ -5,7 +5,7 @@ import {
   addProduct,
   deleteProduct,
   updateProduct,
-  deleteAllProduct,
+  deleteAllProduct
 } from "../controller/productController.js";
 import {
   resizeImage,

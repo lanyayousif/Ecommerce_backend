@@ -18,7 +18,6 @@ export const getAllCatagory = async (req, res) => {
   }
 };
 
-
 export const getCatagoryById = async (req, res) => {
     try {
       const catagory = await Catagory.findById(req.params.id);
