@@ -21,6 +21,7 @@ export const getAllProduct = async (req, res) => {
 
     const countQuery = getQuery.clone();
     const countResults = await countQuery.count();//count number product return
+    let aggregateFunction;
 
     if (req.query.sort) {
       if(req.query.sort==="alphaAZ"){
@@ -30,25 +31,40 @@ export const getAllProduct = async (req, res) => {
         getQuery.sort({productName:-1});
       }
       else if(req.query.sort==="pricelow"){
-        // getQuery.aggregate([
-        //   {
-        //     $addFields: {
-        //       minPrice: {
-        //         $min: ["$ProductPrice", "$ProductDiscountPrice"]
-        //       }
-        //     }
-        //   },
-        //   {
-        //     $sort: {
-        //       minPrice: 1
-        //     }
-        //   }
-        // ])
-        
-        getQuery.sort({ProductPrice:1,ProductDiscountPrice:1});
+        aggregateFunction=Product.aggregate([
+          {
+            $addFields: {
+              minPrice: {
+                $cond: {
+                  if: { $eq: ["$ProductDiscountPrice", null] },
+                  then: "$ProductPrice",
+                  else: "$ProductDiscountPrice"
+                }
+              }
+            }
+          },
+          {
+            $sort: { minPrice: 1 }
+          }
+        ])
       }
       else if(req.query.sort==="pricehigh"){
-        getQuery.sort({ProductPrice:-1,ProductDiscountPrice:-1});
+        aggregateFunction=Product.aggregate([
+          {
+            $addFields: {
+              maxPrice: {
+                $cond: {
+                  if: { $eq: ["$ProductDiscountPrice", null] },
+                  then: "$ProductPrice",
+                  else: "$ProductDiscountPrice"
+                }
+              }
+            }
+          },
+          {
+            $sort: { maxPrice: -1 }
+          }
+        ])
       }
       // getQuery.sort(req.query.sort);
       console.log(req.query.sort)
@@ -65,8 +81,10 @@ export const getAllProduct = async (req, res) => {
     getQuery.skip(skip).limit(limit);
 
     const product = await getQuery.populate("catagoryId").populate("cart_items");
-
-    res.json({ status: "sucsess", results: countResults, data: product });
+    const agregatee = await aggregateFunction
+    
+    res.json({ status: "sucsess", results: countResults, data:agregatee? agregatee: product});
+    // res.json({ status: "sucsess", results: countResults, data:data ,agregate: agregatee || ""});
   } catch (error) {
     res.status(404).json({ status: "error", message: error });
   }
