@@ -24,13 +24,7 @@ const productSchema = new mongoose.Schema({
 });
 
 productSchema.virtual('currentPrice').get(function(){
-  // console.log(this.ProductDiscountPrice)
-  // return this.ProductDiscountPrice || this.prodductPrice
-  //  if(this.ProductDiscountPrice===null || this.ProductDiscountPrice===undefined) 
-  //  return this.prodductPrice
-  //  else{return this.ProductDiscountPrice}
   return this.ProductDiscountPrice ?? this.ProductPrice
-
 })
 
 productSchema.pre('save', function (next) {

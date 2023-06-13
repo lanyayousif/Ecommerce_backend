@@ -5,79 +5,70 @@ import Product from "../models/productModels.js";
 
 export const getAllProduct = async (req, res) => {
   try {
-    let query = JSON.stringify(req.query)
+    let query = JSON.stringify(req.query);
     query = query.replace(/\b(gte|gt|lt|lte)\b/g, (match) => `$${match}`);
 
     let queryObj = JSON.parse(query);
-    const excluteQuery = ["sort", "limit", "page", "fields", "search"];
+    const excludeQuery = ["sort", "limit", "page", "fields", "search"];
     
-    excluteQuery.forEach((key) => {
+    excludeQuery.forEach((key) => {
       delete queryObj[key];
     });
     if (req.query.search) {
       queryObj.productName = new RegExp(req.query.search, "i");
     }
+    
     const getQuery = Product.find(queryObj);
 
     const countQuery = getQuery.clone();
-    const countResults = await countQuery.count();//count number product return
-    let aggregateFunction;
+    const countResults = await countQuery.count(); // Count the number of products returned
+    let aggregateFunction = null;
 
     if (req.query.sort) {
-      if(req.query.sort==="alphaAZ"){
-        getQuery.sort({productName:1});
+      if (req.query.sort === "alphaAZ") {
+        getQuery.sort({ productName: 1 });
+      } else if (req.query.sort === "alphaZA") {
+        getQuery.sort({ productName: -1 });
+      } else if (req.query.sort === "pricelow") {
+        aggregateFunction = [
+          {
+            $addFields: {
+              currentPrice: {
+                $cond: {
+                  if: { $eq: ["$ProductDiscountPrice", null] },
+                  then: "$ProductPrice",
+                  else: "$ProductDiscountPrice",
+                },
+              },
+            },
+          },
+          {
+            $sort: { currentPrice: 1 },
+          },
+        ];
+      } else if (req.query.sort === "pricehigh") {
+        aggregateFunction = [
+          {
+            $addFields: {
+              currentPrice: {
+                $cond: {
+                  if: { $eq: ["$ProductDiscountPrice", null] },
+                  then: "$ProductPrice",
+                  else: "$ProductDiscountPrice",
+                },
+              },
+            },
+          },
+          {
+            $sort: { currentPrice: -1 },
+          },
+        ];
       }
-      else if(req.query.sort==="alphaZA"){
-        getQuery.sort({productName:-1});
-      }
-      else if(req.query.sort==="pricelow"){
-        getQuery.sort({ currentPrice: 1 })
-        // aggregateFunction=Product.aggregate([
-        //   {
-        //     $addFields: {
-        //       minPrice: {
-        //         $cond: {
-        //           if: { $eq: ["$ProductDiscountPrice", null] },
-        //           then: "$ProductPrice",
-        //           else: "$ProductDiscountPrice"
-        //         }
-        //       }
-        //     }
-        //   },
-        //   {
-        //     $sort: { minPrice: 1 }
-        //   }
-        // ])
-      }
-      else if(req.query.sort==="pricehigh"){
-        getQuery.sort({ currentPrice: -1 })
-        // aggregateFunction=Product.aggregate([
-        //   {
-        //     $addFields: {
-        //       maxPrice: {
-        //         $cond: {
-        //           if: { $eq: ["$ProductDiscountPrice", null] },
-        //           then: "$ProductPrice",
-        //           else: "$ProductDiscountPrice"
-        //         }
-        //       }
-        //     }
-        //   },
-        //   {
-        //     $sort: { maxPrice: -1 }
-        //   }
-        // ])
-      }
-      // getQuery.sort(req.query.sort);
-      // console.log(req.query.sort)
     }
 
     if (req.query.fields) {
       getQuery.select(req.query.fields);
     }
-    // else {
-    //   getQuery.select("-currentPrice"); 
-    // }
    
     const page = req.query.page || 1;
     const limit = req.query.limit || 9;
@@ -85,33 +76,27 @@ export const getAllProduct = async (req, res) => {
 
     getQuery.skip(skip).limit(limit);
 
-    const product = await getQuery.populate("catagoryId").populate("cart_items");
-    // const agregatee = await aggregateFunction
-    
-    // const test= await Product.find({})
-    // .exec()
-    // .then(products => {
-    //   products.forEach(product => {
-    //     console.log(product.currentPrice);
-    //   });
-    // })
-    // .catch(err => {
-    //   console.error(err);
-    // });
-    // console.log(test)
-    
-    
-    product.forEach((product) => {
-      console.log(product.currentPrice);
-    });
+    let product;
 
-    // res.json({ status: "sucsess", results: countResults, data:agregatee? agregatee: product});
-    res.json({ status: "sucsess", results: countResults, data: product});
-    // res.json({ status: "sucsess", results: countResults, data:product ,agregate: agregatee || ""});
+    if (aggregateFunction) {
+      product = await Product.aggregate([
+        ...aggregateFunction,
+        { $skip: skip },
+        { $limit: limit },
+        { $lookup: { from: "catagories", localField: "catagoryId", foreignField: "_id", as: "catagoryId" } },
+        { $lookup: { from: "carts", localField: "cart_items", foreignField: "_id", as: "cart_items" } },
+      ]);
+    } else {
+      product = await getQuery.populate("catagoryId").populate("cart_items");
+    }
+    
+    res.json({ status: "success", results: countResults, data: product });
   } catch (error) {
     res.status(404).json({ status: "error", message: error });
   }
-}
+};
+
+
 
 export const getAll = async (req, res) => {
   try {
