@@ -23,6 +23,20 @@ const productSchema = new mongoose.Schema({
   catagoryId:{type:mongoose.Types.ObjectId,ref:"catagory",required:false},
 });
 
+productSchema.virtual('currentPrice').get(function(){
+  // console.log(this.ProductDiscountPrice)
+  // return this.ProductDiscountPrice || this.prodductPrice
+  //  if(this.ProductDiscountPrice===null || this.ProductDiscountPrice===undefined) 
+  //  return this.prodductPrice
+  //  else{return this.ProductDiscountPrice}
+  return this.ProductDiscountPrice ?? this.ProductPrice
+
+})
+
+productSchema.pre('save', function (next) {
+  this.currentPrice = this.ProductDiscountPrice || this.ProductPrice;
+  next();
+});
 const product = mongoose.model("product", productSchema);
 export default product;
 // productReviews: [

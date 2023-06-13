@@ -31,48 +31,53 @@ export const getAllProduct = async (req, res) => {
         getQuery.sort({productName:-1});
       }
       else if(req.query.sort==="pricelow"){
-        aggregateFunction=Product.aggregate([
-          {
-            $addFields: {
-              minPrice: {
-                $cond: {
-                  if: { $eq: ["$ProductDiscountPrice", null] },
-                  then: "$ProductPrice",
-                  else: "$ProductDiscountPrice"
-                }
-              }
-            }
-          },
-          {
-            $sort: { minPrice: 1 }
-          }
-        ])
+        getQuery.sort({ currentPrice: 1 })
+        // aggregateFunction=Product.aggregate([
+        //   {
+        //     $addFields: {
+        //       minPrice: {
+        //         $cond: {
+        //           if: { $eq: ["$ProductDiscountPrice", null] },
+        //           then: "$ProductPrice",
+        //           else: "$ProductDiscountPrice"
+        //         }
+        //       }
+        //     }
+        //   },
+        //   {
+        //     $sort: { minPrice: 1 }
+        //   }
+        // ])
       }
       else if(req.query.sort==="pricehigh"){
-        aggregateFunction=Product.aggregate([
-          {
-            $addFields: {
-              maxPrice: {
-                $cond: {
-                  if: { $eq: ["$ProductDiscountPrice", null] },
-                  then: "$ProductPrice",
-                  else: "$ProductDiscountPrice"
-                }
-              }
-            }
-          },
-          {
-            $sort: { maxPrice: -1 }
-          }
-        ])
+        getQuery.sort({ currentPrice: -1 })
+        // aggregateFunction=Product.aggregate([
+        //   {
+        //     $addFields: {
+        //       maxPrice: {
+        //         $cond: {
+        //           if: { $eq: ["$ProductDiscountPrice", null] },
+        //           then: "$ProductPrice",
+        //           else: "$ProductDiscountPrice"
+        //         }
+        //       }
+        //     }
+        //   },
+        //   {
+        //     $sort: { maxPrice: -1 }
+        //   }
+        // ])
       }
       // getQuery.sort(req.query.sort);
-      console.log(req.query.sort)
+      // console.log(req.query.sort)
     }
 
     if (req.query.fields) {
       getQuery.select(req.query.fields);
     }
+    // else {
+    //   getQuery.select("-currentPrice"); 
+    // }
    
     const page = req.query.page || 1;
     const limit = req.query.limit || 9;
@@ -81,10 +86,28 @@ export const getAllProduct = async (req, res) => {
     getQuery.skip(skip).limit(limit);
 
     const product = await getQuery.populate("catagoryId").populate("cart_items");
-    const agregatee = await aggregateFunction
+    // const agregatee = await aggregateFunction
     
-    res.json({ status: "sucsess", results: countResults, data:agregatee? agregatee: product});
-    // res.json({ status: "sucsess", results: countResults, data:data ,agregate: agregatee || ""});
+    // const test= await Product.find({})
+    // .exec()
+    // .then(products => {
+    //   products.forEach(product => {
+    //     console.log(product.currentPrice);
+    //   });
+    // })
+    // .catch(err => {
+    //   console.error(err);
+    // });
+    // console.log(test)
+    
+    
+    product.forEach((product) => {
+      console.log(product.currentPrice);
+    });
+
+    // res.json({ status: "sucsess", results: countResults, data:agregatee? agregatee: product});
+    res.json({ status: "sucsess", results: countResults, data: product});
+    // res.json({ status: "sucsess", results: countResults, data:product ,agregate: agregatee || ""});
   } catch (error) {
     res.status(404).json({ status: "error", message: error });
   }
