@@ -40,5 +40,6 @@ const __dirname=path.resolve() // director yakamn bo aheni path akai
 app.use("/uploads",express.static(path.join(__dirname,"/uploads"))) 
 // express.static() bo awai xpress bzani static controllerman nayawati
 
+console.log("test")
 
 export default app;
